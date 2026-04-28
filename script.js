@@ -107,9 +107,29 @@ form.addEventListener("submit", (e) => {
   const mult = getMultiplier(move, t1, t2);
   const { min, max } = calculateDamage(level, atk, def, power, mult * stab);
 
+  // ✅ FIX: define percentText properly
   let percentText = `<p class="muted">Add HP to see % damage</p>`;
   if (hp) {
     percentText = `<p><strong>HP Damage:</strong> ${((min/hp)*100).toFixed(1)}% - ${((max/hp)*100).toFixed(1)}%</p>`;
+  }
+
+  // HP BAR
+  const remainingHPPercent = hp ? ((hp - max) / hp) * 100 : null;
+  let hpBarHTML = "";
+
+  if (hp) {
+    const percentLeft = Math.max(0, remainingHPPercent);
+
+    let color = "#22c55e";
+    if (percentLeft <= 50) color = "#eab308";
+    if (percentLeft <= 20) color = "#ef4444";
+
+    hpBarHTML = `
+      <div class="hp-container">
+        <div class="hp-bar" style="width:${percentLeft}%; background:${color}"></div>
+      </div>
+      <p><strong>HP Left:</strong> ${percentLeft.toFixed(1)}%</p>
+    `;
   }
 
   const effectivenessText = formatEffectiveness(mult);
@@ -123,6 +143,7 @@ form.addEventListener("submit", (e) => {
     <h2>Result</h2>
     <p><strong>Damage:</strong> ${min} - ${max}</p>
     ${percentText}
+    ${hpBarHTML}
     <p><strong>Effectiveness:</strong> ${effectivenessText}</p>
     ${stabText}
   `;
