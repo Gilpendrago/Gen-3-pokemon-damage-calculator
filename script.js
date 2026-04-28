@@ -107,32 +107,34 @@ form.addEventListener("submit", (e) => {
   const mult = getMultiplier(move, t1, t2);
   const { min, max } = calculateDamage(level, atk, def, power, mult * stab);
 
-  // ✅ FIX: define percentText properly
-  let percentText = `<p class="muted">Add HP to see % damage</p>`;
-  if (hp) {
-    percentText = `<p><strong>HP Damage:</strong> ${((min/hp)*100).toFixed(1)}% - ${((max/hp)*100).toFixed(1)}%</p>`;
-  }
+  const effectivenessText = formatEffectiveness(mult);
 
-  // HP BAR
-  const remainingHPPercent = hp ? ((hp - max) / hp) * 100 : null;
+  let percentText = `<p class="muted">Add HP to see % damage</p>`;
   let hpBarHTML = "";
 
   if (hp) {
-    const percentLeft = Math.max(0, remainingHPPercent);
+    const percentLeft = Math.max(0, ((hp - max) / hp) * 100);
 
     let color = "#22c55e";
-    if (percentLeft <= 50) color = "#eab308";
-    if (percentLeft <= 20) color = "#ef4444";
+    if (percentLeft < 50) color = "#facc15";
+    if (percentLeft < 20) color = "#ef4444";
 
     hpBarHTML = `
       <div class="hp-container">
-        <div class="hp-bar" style="width:${percentLeft}%; background:${color}"></div>
+        <div class="hp-bar" id="hp-bar" style="width:100%; background:${color};"></div>
       </div>
       <p><strong>HP Left:</strong> ${percentLeft.toFixed(1)}%</p>
     `;
-  }
 
-  const effectivenessText = formatEffectiveness(mult);
+    percentText = `<p><strong>HP Damage:</strong> ${((min/hp)*100).toFixed(1)}% - ${((max/hp)*100).toFixed(1)}%</p>`;
+
+    setTimeout(() => {
+      const bar = document.getElementById("hp-bar");
+      if (bar) {
+        bar.style.width = percentLeft + "%";
+      }
+    }, 100);
+  }
 
   let stabText = "";
   if (stab > 1) {
