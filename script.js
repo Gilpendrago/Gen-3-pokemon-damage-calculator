@@ -64,6 +64,16 @@ function getNum(id) {
   return val > 0 ? val : null;
 }
 
+function formatEffectiveness(mult) {
+  if (mult === 0) return "No effect (0x)";
+  if (mult === 0.25) return "Not very effective (0.25x)";
+  if (mult === 0.5) return "Not very effective (0.5x)";
+  if (mult === 1) return "Neutral (1x)";
+  if (mult === 2) return "Super effective (2x)";
+  if (mult === 4) return "Super effective (4x)";
+  return `${mult}x`;
+}
+
 fillOptions(moveTypeSelect);
 fillOptions(defType1Select);
 fillOptions(defType2Select, true);
@@ -78,6 +88,7 @@ form.addEventListener("submit", (e) => {
   const atk = getNum("attack");
   const def = getNum("defense");
   const power = getNum("move-power");
+
   const hpVal = document.getElementById("hp").value;
   const hp = hpVal ? getNum("hp") : null;
 
@@ -85,23 +96,34 @@ form.addEventListener("submit", (e) => {
   const t1 = defType1Select.value;
   const t2 = defType2Select.value;
 
+  const stabChecked = document.getElementById("stab").checked;
+  const stab = stabChecked ? 1.5 : 1;
+
   if (!level || !atk || !def || !power || !t1) {
     resultBox.innerHTML = `<h2>Result</h2><p>Invalid input</p>`;
     return;
   }
 
   const mult = getMultiplier(move, t1, t2);
-  const { min, max } = calculateDamage(level, atk, def, power, mult);
+  const { min, max } = calculateDamage(level, atk, def, power, mult * stab);
 
-  let percentText = `<p>Add HP to see % damage</p>`;
+  let percentText = `<p class="muted">Add HP to see % damage</p>`;
   if (hp) {
-    percentText = `<p>${((min/hp)*100).toFixed(1)}% - ${((max/hp)*100).toFixed(1)}%</p>`;
+    percentText = `<p><strong>HP Damage:</strong> ${((min/hp)*100).toFixed(1)}% - ${((max/hp)*100).toFixed(1)}%</p>`;
+  }
+
+  const effectivenessText = formatEffectiveness(mult);
+
+  let stabText = "";
+  if (stab > 1) {
+    stabText = `<p style="color:#22c55e;"><strong>STAB applied (1.5×)</strong></p>`;
   }
 
   resultBox.innerHTML = `
     <h2>Result</h2>
     <p><strong>Damage:</strong> ${min} - ${max}</p>
     ${percentText}
-    <p><strong>Effectiveness:</strong> ${mult}x</p>
+    <p><strong>Effectiveness:</strong> ${effectivenessText}</p>
+    ${stabText}
   `;
 });

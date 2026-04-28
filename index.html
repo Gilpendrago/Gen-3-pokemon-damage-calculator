@@ -13,6 +13,7 @@
 
     <form id="damage-form" class="card">
       <div class="grid">
+        
         <label>
           Level
           <input id="level" type="number" min="1" max="100" value="50" required />
@@ -52,6 +53,11 @@
         </label>
 
         <label>
+          STAB (Same Type Attack Bonus)
+          <input type="checkbox" id="stab" />
+        </label>
+
+        <label>
           Defender Type 1
           <select id="def-type-1"></select>
         </label>
@@ -62,6 +68,7 @@
             <option value="">None</option>
           </select>
         </label>
+
       </div>
 
       <button type="submit">Calculate Damage</button>
@@ -71,6 +78,7 @@
       <h2>Result</h2>
       <p>Enter values and calculate to see output.</p>
     </section>
+
   </main>
 
   <script src="script.js"></script>
