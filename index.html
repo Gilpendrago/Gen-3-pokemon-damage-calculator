@@ -12,62 +12,81 @@
     <p class="subtitle">Simple and clean calculator for battle planning.</p>
 
     <form id="damage-form" class="card">
-      <div class="grid">
-        
-        <label>
-          Level
-          <input id="level" type="number" min="1" max="100" value="50" required />
-        </label>
 
-        <label>
-          Attack
-          <input id="attack" type="number" min="1" value="100" required />
-        </label>
+      <div class="grid-2">
 
-        <label>
-          Defense
-          <input id="defense" type="number" min="1" value="100" required />
-        </label>
+        <!-- LEFT SIDE (ATTACKER) -->
+        <div class="left-col">
+          
+          <label>
+            Level
+            <input id="level" type="number" min="1" max="100" value="50" required />
+          </label>
 
-        <label>
-          Move Power
-          <input id="move-power" type="number" min="1" value="80" required />
-        </label>
+          <label>
+            Attack
+            <input id="attack" type="number" min="1" value="100" required />
+          </label>
 
-        <label>
-          HP (optional)
-          <input id="hp" type="number" min="1" placeholder="e.g. 200" />
-        </label>
+          <label>
+            Move Power
+            <input id="move-power" type="number" min="1" value="80" required />
+          </label>
 
-        <label>
-          Category
-          <select id="category">
-            <option value="physical">Physical</option>
-            <option value="special">Special</option>
-          </select>
-        </label>
+          <label>
+            Category
+            <select id="category">
+              <option value="physical">Physical</option>
+              <option value="special">Special</option>
+            </select>
+          </label>
 
-        <label>
-          Move Type
-          <select id="move-type"></select>
-        </label>
+          <label>
+            Move Type
+            <select id="move-type"></select>
+          </label>
 
-        <label>
-          STAB (Same Type Attack Bonus)
-          <input type="checkbox" id="stab" />
-        </label>
+          <!-- STAB + CRIT -->
+          <div class="inline-row">
+            <label>
+              STAB
+              <input type="checkbox" id="stab" />
+            </label>
 
-        <label>
-          Defender Type 1
-          <select id="def-type-1"></select>
-        </label>
+            <label>
+              Crit
+              <input type="checkbox" id="crit" />
+            </label>
+          </div>
 
-        <label>
-          Defender Type 2
-          <select id="def-type-2">
-            <option value="">None</option>
-          </select>
-        </label>
+        </div>
+
+        <!-- RIGHT SIDE (DEFENDER) -->
+        <div class="right-col">
+
+          <label>
+            Defense
+            <input id="defense" type="number" min="1" value="100" required />
+          </label>
+
+          <label>
+            HP (optional)
+            <input id="hp" type="number" min="1" placeholder="e.g. 200" />
+          </label>
+
+          <label>
+            Defender Type 1
+            <select id="def-type-1"></select>
+          </label>
+
+          <label>
+            Defender Type 2
+            <select id="def-type-2">
+              <option value="">None</option>
+            </select>
+          </label>
+
+        </div>
 
       </div>
 

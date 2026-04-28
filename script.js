@@ -96,18 +96,18 @@ form.addEventListener("submit", (e) => {
   const t1 = defType1Select.value;
   const t2 = defType2Select.value;
 
-  const stabChecked = document.getElementById("stab").checked;
-  const stab = stabChecked ? 1.5 : 1;
+  const stab = document.getElementById("stab").checked ? 1.5 : 1;
+  const crit = document.getElementById("crit").checked ? 2 : 1;
 
   if (!level || !atk || !def || !power || !t1) {
     resultBox.innerHTML = `<h2>Result</h2><p>Invalid input</p>`;
     return;
   }
 
-  const mult = getMultiplier(move, t1, t2);
-  const { min, max } = calculateDamage(level, atk, def, power, mult * stab);
+  const typeMult = getMultiplier(move, t1, t2);
+  const totalMult = typeMult * stab * crit;
 
-  const effectivenessText = formatEffectiveness(mult);
+  const { min, max } = calculateDamage(level, atk, def, power, totalMult);
 
   let percentText = `<p class="muted">Add HP to see % damage</p>`;
   let hpBarHTML = "";
@@ -115,30 +115,51 @@ form.addEventListener("submit", (e) => {
   if (hp) {
     const percentLeft = Math.max(0, ((hp - max) / hp) * 100);
 
-    let color = "#22c55e";
-    if (percentLeft < 50) color = "#facc15";
-    if (percentLeft < 20) color = "#ef4444";
+    percentText = `<p><strong>HP Damage:</strong> ${((min/hp)*100).toFixed(1)}% - ${((max/hp)*100).toFixed(1)}%</p>`;
 
     hpBarHTML = `
       <div class="hp-container">
-        <div class="hp-bar" id="hp-bar" style="width:100%; background:${color};"></div>
+        <div class="hp-bar" id="hp-bar" style="width:100%; background:#22c55e;"></div>
       </div>
       <p><strong>HP Left:</strong> ${percentLeft.toFixed(1)}%</p>
     `;
 
-    percentText = `<p><strong>HP Damage:</strong> ${((min/hp)*100).toFixed(1)}% - ${((max/hp)*100).toFixed(1)}%</p>`;
-
+    // animation AFTER render
     setTimeout(() => {
       const bar = document.getElementById("hp-bar");
-      if (bar) {
-        bar.style.width = percentLeft + "%";
-      }
-    }, 100);
+      if (!bar) return;
+
+      let current = 100;
+
+      const interval = setInterval(() => {
+        if (current <= percentLeft) {
+          current = percentLeft;
+          bar.style.width = current + "%";
+          clearInterval(interval);
+          return;
+        }
+
+        current -= Math.max(1, (current - percentLeft) * 0.08);
+        bar.style.width = current + "%";
+
+        if (current <= 20) {
+          bar.style.background = "#ef4444";
+          bar.classList.add("low-hp");
+        } else if (current <= 50) {
+          bar.style.background = "#facc15";
+          bar.classList.remove("low-hp");
+        } else {
+          bar.style.background = "#22c55e";
+          bar.classList.remove("low-hp");
+        }
+
+      }, 16);
+    }, 50);
   }
 
-  let stabText = "";
-  if (stab > 1) {
-    stabText = `<p style="color:#22c55e;"><strong>STAB applied (1.5×)</strong></p>`;
+  let critText = "";
+  if (crit > 1) {
+    critText = `<p style="color:#facc15;"><strong>Critical Hit! (2×)</strong></p>`;
   }
 
   resultBox.innerHTML = `
@@ -146,7 +167,7 @@ form.addEventListener("submit", (e) => {
     <p><strong>Damage:</strong> ${min} - ${max}</p>
     ${percentText}
     ${hpBarHTML}
-    <p><strong>Effectiveness:</strong> ${effectivenessText}</p>
-    ${stabText}
+    <p><strong>Effectiveness:</strong> ${formatEffectiveness(typeMult)}</p>
+    ${critText}
   `;
 });
